@@ -579,6 +579,7 @@ class _BetterPlayerMaterialControlsState extends BetterPlayerControlsState<Bette
 
   void _onPlayerHide() {
     _betterPlayerController!.toggleControlsVisibility(!controlsNotVisible);
+    _betterPlayerController!.setControlsVisibility(!controlsNotVisible);
     widget.onControlsVisibilityChanged(!controlsNotVisible);
   }
 

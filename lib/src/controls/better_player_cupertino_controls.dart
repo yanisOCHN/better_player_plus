@@ -557,6 +557,7 @@ class _BetterPlayerCupertinoControlsState extends BetterPlayerControlsState<Bett
 
   void _onPlayerHide() {
     _betterPlayerController!.toggleControlsVisibility(!controlsNotVisible);
+    _betterPlayerController!.setControlsVisibility(!controlsNotVisible);
     widget.onControlsVisibilityChanged(!controlsNotVisible);
   }
 
