@@ -319,15 +319,21 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
         guard isInitialized, key != nil else { return }
         if !observersAdded, let current = player.currentItem { addObservers(current) }
         if isPlaying {
-            if #available(iOS 10.0, *) {
-                player.playImmediately(atRate: 1.0)
-                player.rate = playerRate
-            } else {
-                player.play()
-                player.rate = playerRate
-            }
+            applyPlayerRate()
         } else {
             player.pause()
+        }
+    }
+
+    private func applyPlayerRate() {
+        if #available(iOS 16, *) {
+            player.defaultRate = playerRate
+        }
+        if #available(iOS 10.0, *) {
+            player.playImmediately(atRate: playerRate)
+        } else {
+            player.play()
+            player.rate = playerRate
         }
     }
 
@@ -409,7 +415,7 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
         if wasPlaying { player.pause() }
         player.seek(to: CMTimeMake(value: Int64(location), timescale: 1000), toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             guard let self = self else { return }
-            if wasPlaying { self.player.rate = self.playerRate }
+            if wasPlaying { self.applyPlayerRate() }
         }
     }
 
@@ -419,26 +425,16 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
     }
 
     public func setSpeed(_ speed: Double, result: FlutterResult) {
-        if speed == 1.0 || speed == 0.0 {
-            playerRate = 1
-            result(nil)
-        } else if speed < 0 || speed > 2.0 {
+        if speed < 0 || speed > 2.0 {
             result(FlutterError(code: "unsupported_speed", message: "Speed must be >= 0.0 and <= 2.0", details: nil))
-        } else if (speed > 1.0 && (player.currentItem?.canPlayFastForward ?? false)) || (speed < 1.0 && (player.currentItem?.canPlaySlowForward ?? false)) {
-            playerRate = Float(speed)
-            result(nil)
-        } else {
-            if speed <= 1.0 {
-                result(FlutterError(code: "unsupported_slow_forward", message: "This video cannot be played slow forward", details: nil))
-            }
+            return
         }
 
+        playerRate = Float(speed == 0.0 ? 1.0 : speed)
         if isPlaying {
-            if #available(iOS 16, *) {
-                player.defaultRate = Float(speed)
-            }
-            player.rate = Float(speed)
+            applyPlayerRate()
         }
+        result(nil)
     }
 
     public func setTrackParameters(width: Int, height: Int, bitrate: Int) {
