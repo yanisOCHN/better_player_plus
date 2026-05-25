@@ -283,6 +283,14 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
                 }
             }
 
+            if isPlaying && playerRate > 0 && player.rate > 0 && abs(player.rate - playerRate) > 0.0001 {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self, self.isPlaying, self.player.rate > 0,
+                          abs(self.player.rate - self.playerRate) > 0.0001 else { return }
+                    self.applyPlayerRate()
+                }
+            }
+
             if player.rate == 0 && CMTimeCompare(player.currentItem?.currentTime() ?? .zero, .zero) == 1 && (player.currentItem?.duration ?? .zero).isValid && CMTimeCompare(player.currentItem?.currentTime() ?? .zero, player.currentItem?.duration ?? .zero) == -1 && isPlaying {
                 handleStalled()
             }
