@@ -13,6 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
+        .package(url: "https://github.com/hyperoslo/Cache.git", from: "7.4.0"),
     ],
     targets: [
         .target(
@@ -32,6 +33,7 @@ let package = Package(
             name: "better_player_plus",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
+                .product(name: "Cache", package: "Cache"),
                 .target(name: "GCDWebServer"),
                 .target(name: "PINCache"),
                 .target(name: "HLSCachingReverseProxyServer"),
