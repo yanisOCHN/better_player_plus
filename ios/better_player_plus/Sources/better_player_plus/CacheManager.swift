@@ -81,7 +81,11 @@ import Cache
     @objc public func getCachingPlayerItemForNormalPlayback(_ url: URL, cacheKey: String?, videoExtension: String?, headers: Dictionary<NSObject,AnyObject>) -> AVPlayerItem? {
         let mimeTypeResult = getMimeType(url:url, explicitVideoExtension: videoExtension)
         if (mimeTypeResult.1 == "application/vnd.apple.mpegurl"){
-            let playerItem = AVPlayerItem(asset: AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": convertHeaders(headers)]))
+            var convertedHeaders = [String: String]()
+            headers.forEach { key, value in
+                convertedHeaders[String(describing: key)] = String(describing: value)
+            }
+            let playerItem = AVPlayerItem(asset: AVURLAsset(url: url, options: [AVURLAssetHTTPHeaderFieldsKey: convertedHeaders]))
             return playerItem
         } else {
             return getCachingPlayerItem(url, cacheKey: cacheKey, videoExtension: videoExtension, headers: headers)
@@ -190,14 +194,6 @@ import Cache
     @objc public func isPreCacheSupported(url: URL, videoExtension: String?) -> Bool{
         let mimeTypeResult = getMimeType(url:url, explicitVideoExtension: videoExtension)
         return !mimeTypeResult.1.isEmpty && mimeTypeResult.1 != "application/vnd.apple.mpegurl"
-    }
-
-    private func convertHeaders(_ headers: Dictionary<NSObject,AnyObject>) -> [String: String] {
-        var convertedHeaders = [String: String]()
-        headers.forEach { key, value in
-            convertedHeaders[String(describing: key)] = String(describing: value)
-        }
-        return convertedHeaders
     }
 }
 
