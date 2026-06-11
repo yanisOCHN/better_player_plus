@@ -91,7 +91,7 @@ import Cache
                     httpHeaders[convertedKey] = convertedValue
                 }
             }
-            let playerItem = AVPlayerItem(asset: AVURLAsset(url: url, options: [AVURLAssetHTTPHeaderFieldsKey: httpHeaders]))
+            let playerItem = AVPlayerItem(asset: AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": httpHeaders]))
             return playerItem
         } else {
             return getCachingPlayerItem(url, cacheKey: cacheKey, videoExtension: videoExtension, headers: headers)

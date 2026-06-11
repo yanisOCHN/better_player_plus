@@ -13,7 +13,9 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
-        .package(url: "https://github.com/hyperoslo/Cache.git", from: "7.4.0"),
+        // Pinned to 6.x to match the CocoaPods dependency (Cache 7.x is not
+        // published on CocoaPods) and the Storage initializer without fileManager.
+        .package(url: "https://github.com/hyperoslo/Cache.git", "6.0.0"..<"7.0.0"),
     ],
     targets: [
         .target(

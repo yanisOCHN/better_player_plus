@@ -1,3 +1,19 @@
+## 1.3.2
+
+* Fixed iOS HLS playback with `useCache: true` for modern fMP4/CMAF streams (`#EXT-X-MAP`, `.m4s`, external audio renditions) by playing HLS directly through `AVURLAsset` instead of the localhost reverse proxy
+* Fixed iOS Swift compile errors: aligned `Cache` dependency to 6.x for both CocoaPods and SPM (Cache 7.x is not published on CocoaPods) and restored the `AVURLAssetHTTPHeaderFieldsKey` string literal
+* Fixed player layout not refreshing after manual HLS/DASH quality track switch: `setTrack` now updates the reported video size and emits a `changedTrack` controller event
+* Fixed duplicate `@interface BetterPlayerPlugin` definition in the iOS plugin header
+* Hardened iOS HLS header conversion with typed `String`/`NSNumber` handling
+* Removed unused `HLSCachingReverseProxyServer`, `GCDWebServer` and `PINCache` dependencies from the iOS podspec
+* Optimized iOS BoxFit handling with scheduled application
+* `CacheManager.setup()` is now a deprecated no-op on iOS (no HLS proxy setup needed)
+
+## 1.3.1
+
+* Updated iOS dependencies and cleaned up stale SPM `Package.resolved` pins
+* Minor cleanup in `better_player_with_controls.dart`
+
 ## 1.3.0
 
 * Added iOS Swift Package Manager (SPM) support
