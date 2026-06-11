@@ -84,9 +84,8 @@ import Cache
         if (mimeTypeResult.1 == "application/vnd.apple.mpegurl"){
             var convertedHeaders = [String: String]()
             headers.forEach { key, value in
-                let convertedKey: String? = (key as? String) ?? (key as? NSString).map { String($0) }
+                let convertedKey: String? = key as? String
                 let convertedValue: String? = (value as? String)
-                    ?? (value as? NSString).map { String($0) }
                     ?? (value as? NSNumber).map { $0.stringValue }
                 if let convertedKey = convertedKey, let convertedValue = convertedValue {
                     convertedHeaders[convertedKey] = convertedValue
