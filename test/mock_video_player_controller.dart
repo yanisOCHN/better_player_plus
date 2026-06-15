@@ -57,11 +57,7 @@ class MockVideoPlayerController extends VideoPlayerController {
   }
 
   @override
-  Future<void> setTrackParameters(int? width, int? height, int? bitrate) async {
-    trackWidth = width;
-    trackHeight = height;
-    trackBitrate = bitrate;
-  }
+  Future<void> setTrackParameters(int? width, int? height, int? bitrate) async {}
 
   @override
   Future<void> setNetworkDataSource(

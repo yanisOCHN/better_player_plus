@@ -384,7 +384,7 @@ void main() {
       final controllerEvents = <BetterPlayerControllerEvent>[];
       final subscription = betterPlayerController.controllerEventStream.listen(controllerEvents.add);
 
-      betterPlayerController.setTrack(
+      await betterPlayerController.setTrack(
         const BetterPlayerAsmsTrack('720p', 1280, 720, 1200000, 30, 'avc1.64001f', 'video/mp4'),
       );
 
@@ -393,6 +393,7 @@ void main() {
       expect(videoPlayerController.trackWidth, 1280);
       expect(videoPlayerController.trackHeight, 720);
       expect(videoPlayerController.trackBitrate, 1200000);
+      expect(videoPlayerController.value.size, const Size(1280, 720));
       expect(controllerEvents, contains(BetterPlayerControllerEvent.changedTrack));
       await subscription.cancel();
     });
