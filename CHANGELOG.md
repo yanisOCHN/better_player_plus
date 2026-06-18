@@ -1,3 +1,9 @@
+## 1.3.4
+
+* Fixed iOS build error: duplicate `BetterPlayerPlugin` interface definition caused by CocoaPods exposing ObjC header alongside Swift-generated header; excluded `BetterPlayerPlugin.h/m` from podspec source files
+* Fixed iOS Profile build configuration missing `Profile.xcconfig`, causing CocoaPods base config conflict
+* Fixed Android example `build.gradle.kts` missing `org.jetbrains.kotlin.android` plugin, causing unresolved `kotlin { compilerOptions }` block
+
 ## 1.3.3
 
 * Fixed iOS podspec version mismatch (was stuck at `1.3.0`), now synced with `pubspec.yaml`
