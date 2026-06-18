@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'better_player_plus'
-  s.version          = '1.3.3'
+  s.version          = '1.3.4'
   s.summary          = 'Advanced video player for Flutter with advanced configuration options.'
   s.description      = <<-DESC
 Advanced video player for Flutter, based on video_player and inspired by Chewie and Better Player. 
@@ -14,6 +14,7 @@ It solves many common use cases out of the box and is easy to integrate.
   s.author           = { 'Sunnatillo Shavkatov' => 'sunnatillo.shavkatov@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'better_player_plus/Sources/better_player_plus/**/*'
+  s.exclude_files = 'better_player_plus/Sources/better_player_plus/BetterPlayerPlugin.{h,m}'
   s.public_header_files = 'better_player_plus/Sources/better_player_plus/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Cache', '~> 6.0.0'
