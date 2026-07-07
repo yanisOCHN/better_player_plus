@@ -40,17 +40,17 @@ class BetterPlayerListVideoPlayer extends StatefulWidget {
   State<BetterPlayerListVideoPlayer> createState() => _BetterPlayerListVideoPlayerState();
 }
 
-class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlayer>
-    with AutomaticKeepAliveClientMixin<BetterPlayerListVideoPlayer> {
+class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlayer> {
   BetterPlayerController? _betterPlayerController;
   bool _isDisposing = false;
+
+  bool _isDataSourceSetup = false;
 
   @override
   void initState() {
     super.initState();
     _betterPlayerController = BetterPlayerController(
       widget.configuration.copyWith(playerVisibilityChangedBehavior: onVisibilityChanged),
-      betterPlayerDataSource: widget.dataSource,
       betterPlayerPlaylistConfiguration: const BetterPlayerPlaylistConfiguration(),
     );
 
@@ -68,7 +68,6 @@ class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlaye
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return AspectRatio(
       aspectRatio: _betterPlayerController!.getAspectRatio() ?? BetterPlayerUtils.calculateAspectRatio(context),
       child: BetterPlayer(key: Key('${_getUniqueKey()}_player'), controller: _betterPlayerController!),
@@ -76,13 +75,19 @@ class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlaye
   }
 
   Future<void> onVisibilityChanged(double visibleFraction) async {
-    final bool? isPlaying = _betterPlayerController!.isPlaying();
-    final bool? initialized = _betterPlayerController!.isVideoInitialized();
     if (visibleFraction >= widget.playFraction) {
+      if (!_isDataSourceSetup && !_isDisposing) {
+        _isDataSourceSetup = true;
+        await _betterPlayerController!.setupDataSource(widget.dataSource);
+      }
+      final bool? isPlaying = _betterPlayerController!.isPlaying();
+      final bool? initialized = _betterPlayerController!.isVideoInitialized();
       if (widget.autoPlay && initialized! && !isPlaying! && !_isDisposing) {
         await _betterPlayerController!.play();
       }
     } else {
+      final bool? isPlaying = _betterPlayerController!.isPlaying();
+      final bool? initialized = _betterPlayerController!.isVideoInitialized();
       if (widget.autoPause && initialized! && isPlaying! && !_isDisposing) {
         await _betterPlayerController!.pause();
       }
@@ -91,6 +96,4 @@ class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlaye
 
   String _getUniqueKey() => widget.dataSource.hashCode.toString();
 
-  @override
-  bool get wantKeepAlive => true;
 }
