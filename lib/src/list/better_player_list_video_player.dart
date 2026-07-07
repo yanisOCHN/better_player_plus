@@ -45,12 +45,13 @@ class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlaye
   BetterPlayerController? _betterPlayerController;
   bool _isDisposing = false;
 
+  bool _isDataSourceSetup = false;
+
   @override
   void initState() {
     super.initState();
     _betterPlayerController = BetterPlayerController(
       widget.configuration.copyWith(playerVisibilityChangedBehavior: onVisibilityChanged),
-      betterPlayerDataSource: widget.dataSource,
       betterPlayerPlaylistConfiguration: const BetterPlayerPlaylistConfiguration(),
     );
 
@@ -76,13 +77,19 @@ class _BetterPlayerListVideoPlayerState extends State<BetterPlayerListVideoPlaye
   }
 
   Future<void> onVisibilityChanged(double visibleFraction) async {
-    final bool? isPlaying = _betterPlayerController!.isPlaying();
-    final bool? initialized = _betterPlayerController!.isVideoInitialized();
     if (visibleFraction >= widget.playFraction) {
+      if (!_isDataSourceSetup && !_isDisposing) {
+        _isDataSourceSetup = true;
+        await _betterPlayerController!.setupDataSource(widget.dataSource);
+      }
+      final bool? isPlaying = _betterPlayerController!.isPlaying();
+      final bool? initialized = _betterPlayerController!.isVideoInitialized();
       if (widget.autoPlay && initialized! && !isPlaying! && !_isDisposing) {
         await _betterPlayerController!.play();
       }
     } else {
+      final bool? isPlaying = _betterPlayerController!.isPlaying();
+      final bool? initialized = _betterPlayerController!.isVideoInitialized();
       if (widget.autoPause && initialized! && isPlaying! && !_isDisposing) {
         await _betterPlayerController!.pause();
       }
