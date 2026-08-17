@@ -43,6 +43,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionOverride
+import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
@@ -497,6 +498,19 @@ internal class BetterPlayer(
 
             override fun onPlayerError(error: PlaybackException) {
                 eventSink.error("VideoError", "Video player had error $error", "")
+            }
+
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+                // The SurfaceTexture's buffer size is only set when the texture is
+                // created, so it stays stuck on the first source's dimensions. When
+                // a resolution swap feeds the surface a differently-sized frame the
+                // decoder output no longer matches the buffer, which shows up as a
+                // garbled frame on Android. Keep the buffer in sync with the current
+                // video size to avoid that.
+                if (videoSize.width > 0 && videoSize.height > 0) {
+                    textureEntry.surfaceTexture()
+                        .setDefaultBufferSize(videoSize.width, videoSize.height)
+                }
             }
         })
         val reply: MutableMap<String, Any> = HashMap()
