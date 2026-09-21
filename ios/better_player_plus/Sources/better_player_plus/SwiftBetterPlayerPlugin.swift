@@ -254,7 +254,10 @@ extension BetterPlayerPlugin {
             }
             result(nil)
         case "dispose":
-            player.clear()
+            // Full teardown, not `clear()`: pause the AVPlayer, detach its item,
+            // and drop the event-channel stream handler that otherwise retains
+            // the player (and its still-streaming AVPlayerItem) for good.
+            player.dispose()
             disposeNotificationData(player)
             setRemoteCommandsNotificationNotActive()
             players.removeValue(forKey: textureId)

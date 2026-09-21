@@ -605,9 +605,15 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
         disposed = false
         failedCount = 0
         key = nil
+        // A pending stalled check would call play() on the torn-down player.
+        NSObject.cancelPreviousPerformRequests(withTarget: self)
         guard player.currentItem != nil else { return }
         removeObservers()
         player.currentItem?.asset.cancelLoading()
+        // Stop the network: an AVPlayer keeps buffering (and, at rate 1, playing)
+        // an attached HLS item. `cancelLoading` only cancels async key loading.
+        player.pause()
+        player.replaceCurrentItem(with: nil)
     }
 
     public func disposeSansEventChannel() {
