@@ -109,6 +109,8 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
     }
 
     @objc private func itemDidPlayToEndTime(_ notification: Notification) {
+        // A paused player should not be re-primed at the start of its stream.
+        guard isPlaying else { return }
         if isLooping {
             if let p = notification.object as? AVPlayerItem {
                 p.seek(to: .zero, completionHandler: nil)
@@ -240,6 +242,12 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
     }
 
     private func startStalledCheck() {
+        // The reader paused (or the player was torn down) while a check was
+        // pending: resuming here would play behind their back.
+        guard isPlaying else {
+            isStalledCheckStarted = false
+            return
+        }
         if let currentItem = player.currentItem {
             if currentItem.isPlaybackLikelyToKeepUp || (availableDuration() - CMTimeGetSeconds(currentItem.currentTime())) > 10.0 {
                 play()
@@ -412,6 +420,10 @@ public class BetterPlayer: NSObject, FlutterPlatformView, FlutterStreamHandler, 
     }
 
     public func pause() {
+        // A stall check armed while playing must not resume a paused player.
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(startStalledCheckObjC), object: nil)
+        isStalledCheckStarted = false
+        stalledCount = 0
         isPlaying = false
         updatePlayingState()
     }
